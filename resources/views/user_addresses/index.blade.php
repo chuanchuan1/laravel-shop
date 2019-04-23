@@ -28,8 +28,9 @@
                                     <td>{{ $address->zip }}</td>
                                     <td>{{ $address->contact_phone }}</td>
                                     <td>
-                                        <button class="btn btn-primary">修改</button>
-                                        <button class="btn btn-danger">删除</button>
+                                        <a href="{{ route('user_addresses.edit', ["user_address" => $address->id]) }}" class="btn btn-primary">修改</a>
+
+                                        <button class="btn btn-danger btn-del-address" type="button" data-id="{{ $address->id }}">删除</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -39,4 +40,35 @@
             </div>
         </div>
     </div>
+@endsection
+@section("scriptsAfterJs")
+<script>
+$(document).ready(function () {
+    // 删除按钮点击事件
+    $(".btn-del-address").click(function () {
+        // 获取按钮上的 data-id 属性的值，也就是地址 ID
+        var id = $(this).data("id");
+        // 调用 sweetalert
+        swal({
+            title: "确认要删除该地址？",
+            icon: "warning",
+            buttons: ['取消', '确定'],
+            dangerMode: true
+        })
+        .then(function (willDelete) {
+            // 用户点击确定 willDelete 为 true
+            // 用户点击取消，什么都不做
+            if (!willDelete) {
+                return ;
+            }
+            // 调用删除接口
+            axios.delete("/user_addresses/" + id)
+                .then(function () {
+                    // 成功之后重新加载页面
+                    location.reload();
+                })
+        })
+    })
+})
+</script>
 @endsection
