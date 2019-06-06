@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -14,6 +15,20 @@ class Product extends Model
     protected $casts = [
         'on_sale' => 'boolean'
     ];
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->hasCompleteUrl($this->attributes['image'])) {
+            return $this->attributes['image'];
+        }
+
+        return \Storage::disk('admin')->url($this->attributes['image']);
+    }
+
+    public function hasCompleteUrl($url)
+    {
+        return Str::startsWith($url, ['http://', 'https://']);
+    }
 
     // 与商品 SKU 关联
     public function skus()
